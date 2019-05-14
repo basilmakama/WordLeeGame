@@ -7,15 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.TopDocs;
-import wordlee.lucenefirstapplication.LuceneTester;
-import wordlee.lucenefirstapplication.Searcher;
-import wordlee.lucenefirstapplication.Indexer;
-import wordlee.lucenefirstapplication.LuceneConstants;
-import wordlee.lucenefirstapplication.TextFileFilter;
+import javax.swing.JOptionPane;
+
 
 
 ;
@@ -38,17 +31,16 @@ public class WordLee {
     	private static WordLee instance = null;
         private final char[][] boardState;
         private final char[][] board2State;
-        private final char[][] resetState, initialBoard;
+        private final char[][] resetState,resetState2, initialBoard,initialBoard2;
         private final ArrayList<Integer> turns;
         private int turn, turnIndex, coordinateI, coordinateJ;
         private ArrayList<Character> letters;
         private ArrayList<Character> letters2;
         private final Map<Character, Integer> values;
         private boolean firstplay;
-        private boolean doubleWord, tripleWord, letterReduction;
+        private boolean doubleWord, tripleWord,extraTurn;
         public static ArrayList<Player> allplayers;
-        String dataDir = "/Users/Basil/Lucene/Data"; 
-	Searcher searcher;
+        
 
 
     /**
@@ -111,10 +103,19 @@ public class WordLee {
 			for(int j = 0; j < boardState.length; j++)
 				resetState[i][j] = boardState[i][j];
                 
+    resetState2 = new char[11][11];
+		for(int i = 0; i < board2State.length; i++)
+			for(int j = 0; j < board2State.length; j++)
+				resetState2[i][j] = board2State[i][j];
+        //     duplicate bordstate  into initial board   
     initialBoard = new char[15][15];
 		for(int i = 0; i < boardState.length; i++)
 			for(int j = 0; j < boardState.length; j++)
 				initialBoard[i][j] = boardState[i][j];
+    initialBoard2 = new char[11][11];
+		for(int i = 0; i < board2State.length; i++)
+			for(int j = 0; j < board2State.length; j++)
+				initialBoard2[i][j] = board2State[i][j];
     
                 values = new HashMap<>();
 		values.put('A', 1);
@@ -177,7 +178,8 @@ public class WordLee {
     public static WordLee getInstance() {
                         if(instance == null)
 			instance = new WordLee();
-                        return instance;    }
+                        return instance;   
+    }
     
     public char getPosition(int i, int j) {
 		return boardState[i][j];
@@ -231,45 +233,15 @@ public class WordLee {
 			for(int j = 0; j < boardState.length; j++)
 				boardState[i][j] = resetState[i][j];
 	}
-        
-        public boolean verifyWord(String word) {
-                
-                LuceneTester tester;
-                try 
-		{ 
-			tester = new LuceneTester(); 
-			tester.search(word);
-                        if(word.equalsIgnoreCase(dataDir))
-                            return true;
-		} 
-                
-		catch (IOException e) 
-		{ 
-			e.printStackTrace(); 
-		} 
-		catch (ParseException e) 
-		{ 
-			e.printStackTrace(); 
-		}
-                return false;
+           public void resetState2() {
+		if(turn == 1) firstplay = true;
+		for(int i = 0; i < board2State.length; i++)
+			for(int j = 0; j < board2State.length; j++)
+				board2State[i][j] = resetState2[i][j];
 	}
+    
         
-       /* private void search(String searchQuery) throws IOException, ParseException
-	{ 
-		searcher = new Searcher(indexDir); 
-		long startTime = System.currentTimeMillis(); 
-		TopDocs hits = searcher.search(searchQuery); 
-		long endTime = System.currentTimeMillis(); 
-		System.out.println(hits.totalHits + " documents found. Time :" + (endTime - startTime)); 
-		for(ScoreDoc scoreDoc : hits.scoreDocs) 
-		{ 
-			Document doc = searcher.getDocument(scoreDoc); 
-			System.out.println("File: " + doc.get(LuceneConstants.FILE_PATH)); 
-		} 
-		searcher.close(); 
-	} */
-        
-      /* public boolean verifyWord(String word) {
+       public boolean checkWord(String word) {
 		String line;
 		
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("enable.txt")))) {			
@@ -282,17 +254,20 @@ public class WordLee {
 		}
 		
 		return false;
-	}*/
+	}
         
         public int calculateScore(char c, int i, int j) {
 		switch (initialBoard[i][j]) {
-			case 1:
+			case 0:
+				return values.get(Character.toUpperCase(c));
+                        case 1:
 				return values.get(Character.toUpperCase(c));
 			case 2:
 				return values.get(Character.toUpperCase(c)) * 2;
 			case 3:
 				return values.get(Character.toUpperCase(c)) * 3;
 			case 4:
+                                extraTurn = true;
 				return values.get(Character.toUpperCase(c));
 			case 5:
 				doubleWord = true;
@@ -301,16 +276,48 @@ public class WordLee {
 				tripleWord = true;
 				return values.get(Character.toUpperCase(c));
                         case 7:
-                                letterReduction = true;
-				return values.get(Character.toUpperCase(c));
-			default:
-				return values.get(Character.toUpperCase(c));
+				return -values.get(Character.toUpperCase(c));
+			
 		}
+                return 0;
+	}
+             public int calculateScore2(char c, int i, int j) {
+		switch (initialBoard2[i][j]) {
+			case 0:
+				return values.get(Character.toUpperCase(c));
+                        case 1:
+				return values.get(Character.toUpperCase(c));
+			case 2:
+				return values.get(Character.toUpperCase(c)) * 2;
+			case 3:
+				return values.get(Character.toUpperCase(c)) * 3;
+			case 4:
+                                extraTurn = true;
+				return values.get(Character.toUpperCase(c));
+			case 5:
+				doubleWord = true;
+				return values.get(Character.toUpperCase(c));
+                        case 6:
+				tripleWord = true;
+				return values.get(Character.toUpperCase(c));
+                        case 7:
+				return -values.get(Character.toUpperCase(c));
+			
+		}
+                return 0;
 	}
         
         public void sumScore(int score) {
 		allplayers.get(turns.get(turnIndex)).score += score;
 	}
+        
+        	public int getTileCount() {
+		return letters.size();
+	}
+              public int getTileCount2() {
+		return letters2.size();
+	}
+        
         
         public boolean endTurn() {
 		boolean completeTurn = false;
@@ -325,23 +332,24 @@ public class WordLee {
 		int totalScore = 0;
 		StringBuilder builder = new StringBuilder();
 		
-		// move marker horizontally to end of letters
+		// moves horizontally to the end of letter
 		while(isLetter(i, j))
 			i++;
 		
-		// move backwards to start of word, capturing all letters
+		// move backwards to start of word
 		while(isLetter(--i, j)) {
 			builder.append(boardState[i][j]);
 			totalScore += calculateScore(boardState[i][j], i, j);
 		}
 		
-		if(verifyWord(builder.reverse().toString())) {
+		if(checkWord(builder.reverse().toString())) {
 			completeTurn = true;
 			if(doubleWord && tripleWord) {
 				sumScore(totalScore * 3 * 2);
 				doubleWord = false;
 				tripleWord = false;
 			}
+
 			else if(doubleWord) {
 				sumScore(totalScore * 2);
 				doubleWord = false;
@@ -350,10 +358,10 @@ public class WordLee {
 				sumScore(totalScore * 3);
 				tripleWord = false;
 			}
-                        else if(letterReduction){
-                                sumScore(totalScore -  values.get(Character.toUpperCase(0)));
-				tripleWord = false;
-                        }
+                        else if(extraTurn) {
+                               // turnIndex++;
+				extraTurn = false;
+			}
 			else
 				sumScore(totalScore);
 		}
@@ -369,19 +377,21 @@ public class WordLee {
 		while(isLetter(i, j))
 			j++;
 		
-		// move vertically to start of word, capturing all letters
+		// move vertically to start of word
 		while(isLetter(i, --j)) {
 			builder.append(boardState[i][j]);
 			totalScore += calculateScore(boardState[i][j], i, j);
 		}
 		
-		if(verifyWord(builder.reverse().toString())) {
+		if(checkWord(builder.reverse().toString())) {
 			completeTurn = true;
 			if(doubleWord && tripleWord) {
 				sumScore(totalScore * 3 * 2);
 				doubleWord = false;
 				tripleWord = false;
 			}
+                       
+                        
 			else if(doubleWord) {
 				sumScore(totalScore * 2);
 				doubleWord = false;
@@ -390,10 +400,10 @@ public class WordLee {
 				sumScore(totalScore * 3);
 				tripleWord = false;
 			}
-                        else if(letterReduction){
-                                sumScore(totalScore -  values.get(Character.toUpperCase(0)));
-				tripleWord = false;
-                        }
+                        else if(extraTurn) {
+                                //turnIndex++;
+				extraTurn = false;
+			}
 			else
 				sumScore(totalScore);
 		}
@@ -410,12 +420,115 @@ public class WordLee {
 		
 		return completeTurn;
 	}
+        
+        
+        public boolean endTurn2() {
+		boolean completeTurn = false;
+		
+		// return false if no changes have been made
+		if(coordinateI == -1 && coordinateJ == -1)
+			return completeTurn;
+		
+		// check all words that have been made
+		int i = coordinateI;
+		int j = coordinateJ;
+		int totalScore = 0;
+		StringBuilder builder = new StringBuilder();
+		
+		// moves horizontally to the end of letter
+		while(isLetter2(i, j))
+			i++;
+		
+		// move backwards to start of word
+		while(isLetter2(--i, j)) {
+			builder.append(board2State[i][j]);
+			totalScore += calculateScore2(board2State[i][j], i, j);
+		}
+		
+		if(checkWord(builder.reverse().toString())) {
+			completeTurn = true;
+			if(doubleWord && tripleWord) {
+				sumScore(totalScore * 3 * 2);
+				doubleWord = false;
+				tripleWord = false;
+			}
+                        
+                        
+			else if(doubleWord) {
+				sumScore(totalScore * 2);
+				doubleWord = false;
+			}
+			else if(tripleWord) {
+				sumScore(totalScore * 3);
+				tripleWord = false;
+			}
+                        else if(extraTurn) {
+                               // turnIndex++;
+				extraTurn = false;
+			}
+			else
+				sumScore(totalScore);
+		}
+		
+		// clear builder
+		builder = new StringBuilder();
+		// reset values
+		i = coordinateI;
+		j = coordinateJ;
+		totalScore = 0;
+		
+		// move marker vertically to end of letters
+		while(isLetter2(i, j))
+			j++;
+		
+		// move vertically to start of word
+		while(isLetter2(i, --j)) {
+			builder.append(board2State[i][j]);
+			totalScore += calculateScore2(board2State[i][j], i, j);
+		}
+		
+		if(checkWord(builder.reverse().toString())) {
+			completeTurn = true;
+			if(doubleWord && tripleWord) {
+				sumScore(totalScore * 3 * 2);
+				doubleWord = false;
+				tripleWord = false;
+			}
+			else if(doubleWord) {
+				sumScore(totalScore * 2);
+				doubleWord = false;
+			}
+			else if(tripleWord) {
+				sumScore(totalScore * 3);
+				tripleWord = false;
+			}
+                        else if(extraTurn) {
+                                //turn++;
+				extraTurn = false;
+			}
+			else
+				sumScore(totalScore);
+		}
+		
+		doubleWord = false;
+		tripleWord = false;
+		firstplay = false;
+		coordinateI = -1;
+		coordinateJ = -1;
+		
+		if(completeTurn)
+			updateState2();
+		
+		return completeTurn;
+	}
 
         
         public void placeLetter(char letter, int i, int j) {
 		boardState[i][j] = letter;
 	}
-        
+        public void placeLetter2(char letter, int i, int j) {
+		board2State[i][j] = letter;
+	}
         public boolean isValid(int i, int j) {
 		// if there is currently a letter there, it is not valid
 		if(isLetter(i, j))
@@ -438,8 +551,39 @@ public class WordLee {
 				firstplay = false;
 				return true;
 			}
+                       else JOptionPane.showMessageDialog(null, "The first play must start from the middle red square");
+
 		}
+
+		return false;
+	}
+        
+           public boolean isValid2(int i, int j) {
+		// if there is currently a letter there, it is not valid
+		if(isLetter2(i, j))
+			return false;
 		
+		// if it's not the first move
+		if(!firstplay) {
+			if(isLetter2(i+1, j) || isLetter2(i-1, j) || isLetter2(i, j+1) || isLetter2(i, j-1)) {
+				coordinateI = i;
+				coordinateJ = j;
+				return true;
+			}
+		}
+		// if it is the first turn
+		else {
+			// must start in the middle
+			if(i == 5 && j == 5) {
+				coordinateI = i;
+				coordinateJ = j;
+				firstplay = false;
+				return true;
+			}
+                       else JOptionPane.showMessageDialog(null, "The first play must start from the middle red square");
+
+		}
+
 		return false;
 	}
         
@@ -453,6 +597,16 @@ public class WordLee {
 		}
 	}
         
+          public boolean isLetter2(int i, int j) {
+		boolean useLetter;
+		try {
+			useLetter = Character.isLetter(board2State[i][j]);
+			return useLetter;
+		} catch (IndexOutOfBoundsException e) {
+			return false;
+		}
+	}
+        
         public void nextPlayer() {
 		turnIndex = ++turnIndex % allplayers.size();
 	}
@@ -460,21 +614,38 @@ public class WordLee {
         public void refillPlayerRack() {
 		allplayers.get(turns.get(turnIndex)).fillHand();
 	}
+        public void refillPlayerRack2() {
+		allplayers.get(turns.get(turnIndex)).fillHand2();
+	}
 
-        
-        	public void setUpPlayers(){
-		// used to figure out turn order
+                // figures out the turn orders 
 		// get hand, get first drawn char and get player num
 		// treemap is automatically sorted by the letter which determines the turn order
-		TreeMap<String,Integer> turnsInfo = new TreeMap<>();
+        	public void setUpPlayers(){
+		TreeMap<String,Integer> turnsDetails = new TreeMap<>();
 		int e = 0;
 		for(Player i : allplayers) {
 			i.fillHand();
-			turnsInfo.put(i.getFirstLetter()+String.valueOf(e),e);
+			turnsDetails.put(i.getFirstLetter()+String.valueOf(e),e);
 			e++;
 		}
 		// populate the turn list
-		for(Map.Entry<String,Integer> i : turnsInfo.entrySet())
+                //entryset returns a set view of mappings contained
+		for(Map.Entry<String,Integer> i : turnsDetails.entrySet())
+			turns.add(i.getValue());
+	}
+                
+                	public void setUpPlayers2(){
+		TreeMap<String,Integer> turnsDetails = new TreeMap<>();
+		int e = 0;
+		for(Player i : allplayers) {
+			i.fillHand2();
+			turnsDetails.put(i.getFirstLetter()+String.valueOf(e),e);
+			e++;
+		}
+		// populate the turn list
+                //entryset returns a set view of mappings contained
+		for(Map.Entry<String,Integer> i : turnsDetails.entrySet())
 			turns.add(i.getValue());
 	}
                 
@@ -483,6 +654,12 @@ public class WordLee {
 		for(int i = 0; i < boardState.length; i++)
 			for(int j = 0; j < boardState.length; j++)
 				resetState[i][j] = boardState[i][j];
+	}
+                     public void updateState2() {
+		turn++;
+		for(int i = 0; i < board2State.length; i++)
+			for(int j = 0; j < board2State.length; j++)
+				resetState2[i][j] = board2State[i][j];
 	}
     
 public class Player {

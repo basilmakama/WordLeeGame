@@ -22,6 +22,8 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -29,6 +31,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
@@ -73,8 +76,9 @@ public class WordLeeBoard2 extends JPanel {
         super.add(butPanel, BorderLayout.NORTH);
         
         //initialize rack
-        wordlee.setUpPlayers();
+        wordlee.setUpPlayers2();
         rPanel.setRack();
+        butPanel.playerturn();
 
         
     }
@@ -108,38 +112,37 @@ public class WordLeeBoard2 extends JPanel {
 					switch (wordlee.getPosition2(i, j)) {
 						case 1:
 							board2[i][j].setText("*");
-							board2[i][j].setFont(new Font("Papyrus", Font.ITALIC, 8));
+							board2[i][j].setFont(new Font("Arial Black", Font.BOLD, 10));
 							break;
 						case 2:
 							board2[i][j].setText("Letter Double");
-							board2[i][j].setFont(new Font("Papyrus", Font.ITALIC, 8));
+							board2[i][j].setFont(new Font("Arial Black", Font.BOLD, 10));
 							break;
 						case 3:
 							board2[i][j].setText("Letter Triple");
-							board2[i][j].setFont(new Font("Papyrus", Font.ITALIC, 8));
+							board2[i][j].setFont(new Font("Arial Black", Font.BOLD, 10));
 							break;
 						case 4:
 							board2[i][j].setText("Extra Turn");
-							board2[i][j].setFont(new Font("Papyrus", Font.ITALIC, 8));
+							board2[i][j].setFont(new Font("Arial Black", Font.BOLD, 10));
 							break;
 						case 5:
 							board2[i][j].setText("Word Double");
-							board2[i][j].setFont(new Font("Papyrus", Font.ITALIC, 8));
+							board2[i][j].setFont(new Font("Arial Black", Font.BOLD, 10));
 							break;
                                                 case 6:
 							board2[i][j].setText("Word Triple");
-							board2[i][j].setFont(new Font("Papyrus", Font.ITALIC, 8));
+							board2[i][j].setFont(new Font("Arial Black", Font.BOLD, 10));
 							break;
                                                 case 7:
 							board2[i][j].setText("Letter Point Reducer");
-							board2[i][j].setFont(new Font("Papyrus", Font.ITALIC, 8));
+							board2[i][j].setFont(new Font("Arial Black", Font.BOLD, 10));
 							break;
-						default:
-							board2[i][j].setText(Character.toString(wordlee.getPosition2(i, j)));
+						case 0:
+							board2[i][j].setText("");
 							break;
 					}
-					board2[i][j].setText("<html><div style='text-align: center;'>" + board2[i][j].getText() + "</div></html>");
-                                        board2[i][j].setFont(new Font("Papyrus", Font.ITALIC, 8));
+						board2[i][j].setText("<html><div style='text-align: center;'>" + board2[i][j].getText() + "</div></html>");
 
 				}
 			}
@@ -155,20 +158,37 @@ public class WordLeeBoard2 extends JPanel {
                                         board2[i][j].addMouseListener(new MouseAdapter() {
 						@Override
 						public void mouseClicked(MouseEvent e) {
+                                                    
+                                                     if(rPanel.getCurrentPiece() != null) {
+							// Functionality for blank pieces
+                                                        if(rPanel.getCurrentPiece().getText().charAt(0) == '*'){
+                                                            String blanktile = JOptionPane.showInputDialog("Enter Letter for the Blank Tile");
+                                                                if (wordlee.isValid2(pos1, pos2)){
+                                                                    rPanel.getCurrentPiece().setText(blanktile.toUpperCase());
+                                                                    board2[pos1][pos2].setText(rPanel.getCurrentPiece().getText());
+                                                                    board2[pos1][pos2].setFont(new Font("Arial Black", Font.BOLD, 30));
+                                                                    board2[pos1][pos2].setBackground(Color.BLACK);
+                                                                    board2[pos1][pos2].setForeground(Color.red);
+                                                                    wordlee.removePlayerLetter(rPanel.getCurrentPiece().getText().charAt(0));
+                                                                    rPanel.getCurrentPiece().removeAll();
+                                                                    rPanel.resetCurrentPiece();
+                                                                    wordlee.placeLetter2(board2[pos1][pos2].getText().charAt(0), pos1, pos2);
+                                                                }
+                                                        }
                                                    
-                                                    if(rPanel.getCurrentPiece() != null) {
+                                                        else{   
 								
-									wordlee.isValid(pos1, pos2);
+									wordlee.isValid2(pos1, pos2);
 										board2[pos1][pos2].setText(rPanel.getCurrentPiece().getText());
 										board2[pos1][pos2].setFont(new Font("Times", Font.BOLD, 30));
 										rPanel.getCurrentPiece().setVisible(false);
 										wordlee.removePlayerLetter(rPanel.getCurrentPiece().getText().charAt(0));
 										rPanel.getCurrentPiece().removeAll();
 										rPanel.resetCurrentPiece();
-										wordlee.placeLetter(board2[pos1][pos2].getText().charAt(0), pos1, pos2);
+										wordlee.placeLetter2(board2[pos1][pos2].getText().charAt(0), pos1, pos2);
 									
 								}
-                                                    
+                                                     }
                                                 }
                                         });
    
@@ -213,7 +233,7 @@ public class WordLeeBoard2 extends JPanel {
 					board2[i][j].setHorizontalAlignment(SwingConstants.CENTER);
 					board2[i][j].setVerticalAlignment(SwingConstants.CENTER);
 					board2[i][j].setText("<html><div style='text-align: center;'>" + board2[i][j].getText() + "</div></html>");
-					board2[i][j].setFont(new Font("Serif", Font.BOLD, 10));
+					board2[i][j].setFont(new Font("Arial Black", Font.BOLD, 10));
 					this.add(board2[i][j]);
     }
                         }
@@ -226,6 +246,7 @@ public class WordLeeBoard2 extends JPanel {
         private ArrayList<Character> rack;
         
         public void setRack(){
+                        removeAll();
 			rack = wordlee.getCurrentPlayerHand();
 			super.setLayout(new FlowLayout(FlowLayout.CENTER));
 			for(Character i : rack) {
@@ -264,6 +285,8 @@ public class WordLeeBoard2 extends JPanel {
     
      private class ButtonPanel extends JPanel{
           
+                  private JLabel currentplayer;
+
           
                     public ButtonPanel(){
                     super();
@@ -279,6 +302,15 @@ public class WordLeeBoard2 extends JPanel {
                     resetTiles.setOpaque(true);
                     resetTiles.setBackground(Color.red);
                     resetTiles.setContentAreaFilled(false);
+                    resetTiles.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					wordlee.resetState2();
+					wordlee.resetPresentPlayer();
+					bPanel.reset();
+					rPanel.setRack();
+				}
+			});
                     
                     
                     JButton skipTurn = new JButton("Skip Turn");
@@ -286,6 +318,18 @@ public class WordLeeBoard2 extends JPanel {
                     skipTurn.setOpaque(true);
                     skipTurn.setBackground(Color.red);
                     skipTurn.setContentAreaFilled(false);
+                    skipTurn.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					wordlee.resetState2();
+					wordlee.resetPresentPlayer();
+					wordlee.nextPlayer();
+					bPanel.reset();
+					rPanel.setRack();
+					butPanel.playerturn();
+					dPanel.updatePlayerInfo();
+				}
+			});
                     
                     
                     JButton play = new JButton("Play");
@@ -293,6 +337,27 @@ public class WordLeeBoard2 extends JPanel {
                     play.setOpaque(true);
                     play.setBackground(Color.red);
                     play.setContentAreaFilled(false);
+                    play.addActionListener(new ActionListener(){
+                        @Override
+                        public void actionPerformed(ActionEvent e){
+                           if(wordlee.endTurn2()) {
+						wordlee.refillPlayerRack2();
+						wordlee.nextPlayer();
+						bPanel.reset();
+						rPanel.setRack();
+                                                butPanel.playerturn();
+						dPanel.updatePlayerInfo();
+                                               
+					}
+					else {
+                                                JOptionPane.showMessageDialog(null, "This is an invalid word! Please try again");
+						wordlee.resetState2();
+						wordlee.resetPresentPlayer();
+						bPanel.reset();
+						rPanel.setRack();
+					}
+                        }
+                    });
                     
                     JButton endGame = new JButton("End Game");
                     endGame.setFocusPainted(false);
@@ -315,10 +380,18 @@ public class WordLeeBoard2 extends JPanel {
                     
                     super.setLayout(new BorderLayout());
                     super.setBorder(BorderFactory.createCompoundBorder(new MatteBorder(0, 0, 2, 0, Color.BLACK), new EmptyBorder(10, 10, 10, 10)));
-                    super.add(buttons, BorderLayout.EAST);
-
+                    super.add(buttons, BorderLayout.WEST);
                     
                       }
+                     public void playerturn(){
+                if (currentplayer == null){
+                    currentplayer = new JLabel(wordlee.getPresentName()+" Turn", SwingConstants.CENTER);
+                    currentplayer.setFont(new Font("Serif", Font.BOLD, 30));
+                    super.add(currentplayer, BorderLayout.EAST);
+                }
+                else currentplayer.setText(wordlee.getPresentName() + "'s Turn" );
+			repaint();            
+            }
                 }
 
     
@@ -328,46 +401,56 @@ public class WordLeeBoard2 extends JPanel {
     
     private class DetailPanel extends JPanel{
             
-            private JLabel tileInfo;
-            private JLabel playersInfo;
+            private JLabel tileInfo2;
+            private JLabel playersInfo2;
+            private JLabel tileNumber;
+
             
             public DetailPanel(){
                     super();
-                    tileInfo = new JLabel("<html>Tile Points<br/><pre>A-1  J-8  S-2"
+                    tileInfo2 = new JLabel("<html>Tile Points<br/><pre>A-1  J-8  S-2"
 					+ "<br/>B-5  K-6  T-1<br/>C-4  L-4  U-2<br/>D-4  M-4  V-6"
 					+ "<br/>E-1 N-1  W-5<br/>F-5  O-1  X-8<br/>G-5  P-5  Y-5"
 					+ "<br/>H-2  Q-10  Z-10<br/>I-1  R-1<br/>Blank-0</pre></html>");
-                    tileInfo.setFont(new Font("Serif", Font.ITALIC, 10));
+                    tileInfo2.setFont(new Font("Lucida Sans Unicode", Font.BOLD, 14));
                     
                     
-                    playersInfo = new JLabel ();
-                    playersInfo.setFont(new Font("Serif", Font.BOLD, 20));
+                    playersInfo2 = new JLabel ();
+                    playersInfo2.setFont(new Font("Lucida Sans Unicode", Font.ITALIC, 30));
 
-                    
-                    
-                    
+                    tileNumber = new JLabel ();
+                    tileNumber.setFont(new Font("Lucida Sans Unicode", Font.ITALIC, 30));
+            
                     super.setLayout(new BorderLayout());
                     super.setBorder(BorderFactory.createCompoundBorder(new MatteBorder(0, 0, 0, 2, Color.BLACK), new EmptyBorder(10, 10, 10, 10)));
-                    super.add(tileInfo, BorderLayout.SOUTH);
-                    super.add(playersInfo, BorderLayout.NORTH);
-                    
-                    updatePlayersInfo();
-                    
-            
+                    super.add(tileInfo2, BorderLayout.SOUTH);
+                    super.add(playersInfo2, BorderLayout.NORTH);
+                    updatePlayerInfo();
             }
-        public void updatePlayersInfo() {
+            
+        public void updatePlayerInfo() {
 			removeAll();
-			super.add(tileInfo, BorderLayout.SOUTH);
-			String data = "<html><b>Scores</b><br/><pre>";
+			super.add(tileInfo2, BorderLayout.SOUTH);
+			String playerdata = "<html><b>Scores</b><br/><pre>";
 			for(int i = 0; i < wordlee.getPlayerCount(); i++) {
-				data += wordlee.getPlayerName(i) + ": " + wordlee.getPlayerScore(i)+"<br/>";
+			playerdata += wordlee.getPlayerName(i) + ": " + wordlee.getPlayerScore(i)+"<br/><br/>";
 			}
-			data += "</pre></html>";
-			playersInfo = new JLabel(data, SwingConstants.CENTER);
-			playersInfo.setFont(new Font("Serif", Font.PLAIN, 14));
-			super.add(playersInfo, BorderLayout.NORTH);
-			
-		}
+                        
+                        String tiledata = "<html><b>Tile Count</b><br/><pre>";
+                        tiledata += wordlee.getTileCount2() + " Tiles Left";
+                        
+                        playerdata += "</pre></html>";
+			playersInfo2 = new JLabel(playerdata, SwingConstants.LEFT);
+			playersInfo2.setFont(new Font("Lucida Sans Unicode", Font.BOLD, 14));
+			super.add(playersInfo2, BorderLayout.NORTH);
+                        
+                        
+                        tiledata += "</pre></html>";
+			tileNumber = new JLabel(tiledata, SwingConstants.LEFT);
+			tileNumber.setFont(new Font("Lucida Sans Unicode", Font.BOLD, 14));
+			super.add(tileNumber, BorderLayout.CENTER);
+
+    }
            
     }
     }

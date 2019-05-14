@@ -14,7 +14,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import javax.swing.BoxLayout;
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 
@@ -38,15 +48,19 @@ public class WordLeeIntro extends JPanel{
         
         JPanel card1 = new JPanel();
         card1.setLayout(new BoxLayout(card1, BoxLayout.Y_AXIS));
-        card1.setBackground(new Color(51,204,255));
+        card1.setBackground(new Color(82,53,148));
         
-        JLabel title = new JLabel("WordLee");
-        title.setFont(new Font("Times Italic", Font.ITALIC, 60));
+        JLabel title = new JLabel(new ImageIcon("/Users/Basil/Desktop/wordlee.png"));
+        
+       // JLabel title = new JLabel("WordLee");
+        //title.setFont(new Font("Times Italic", Font.ITALIC, 60));
         title.setAlignmentX(JLabel.CENTER_ALIGNMENT);
-        title.setForeground(Color.RED);
+        //title.setForeground(Color.RED);
         
-        
-        
+        JPanel buttonsec = new JPanel();
+        buttonsec.setLayout(new BoxLayout(buttonsec, BoxLayout.X_AXIS));
+        buttonsec.setSize(new Dimension(780,265));
+        buttonsec.setBackground(new Color(82,53,148));
         JButton firstboard = new JButton("11 X 11 Board");
         JButton secondboard = new JButton("15 X 15 Board");
         JButton gamerules = new JButton("Game Rules");
@@ -81,20 +95,21 @@ public class WordLeeIntro extends JPanel{
             }
         
         });
-        
                 card1.add(title);
-		card1.add(Box.createVerticalStrut(60));
-		card1.add(menuButton(firstboard));
-		card1.add(Box.createVerticalStrut(30));
-		card1.add(menuButton(secondboard));
-		card1.add(Box.createVerticalStrut(30));
-		card1.add(menuButton(gamerules));
-                card1.add(Box.createVerticalStrut(30));
+                card1.add(buttonsec);
+		buttonsec.add(menuButton(firstboard));
+		buttonsec.add(Box.createHorizontalStrut(30));
+		buttonsec.add(menuButton(secondboard));
+		buttonsec.add(Box.createHorizontalStrut(30));
+		buttonsec.add(menuButton(gamerules));
+                buttonsec.add(Box.createHorizontalStrut(30));
                 
                 // ARRANGEMENT OF GAMES RULES PANEL
                 
                 JPanel card2 = new JPanel();
                 card2.setLayout(new BorderLayout());
+                card2.setBackground(new Color(90,53,148));
+
                 
                 JLabel rulesPanel = new JLabel("<html>This is a word game to be played between a minimum of two players and a maximum of four players,there are two board sizes which the players van choose from and each board has a different number of tiles"+
                                             "<br/>The rules of the game are as follows:"+
@@ -126,12 +141,13 @@ public class WordLeeIntro extends JPanel{
                
                JPanel card3 = new JPanel();
                card3.setLayout(new BoxLayout(card3,BoxLayout.Y_AXIS));
+               card3.setBackground(new Color(90,53,148));
 
                
-               JLabel newGameInfo = new JLabel ("<html>Please select the number of Players for this round</html>");
+               JLabel newGameInfo = new JLabel ("<html>Please choose the Player Number and Enter Player Names for this Round</html>");
                
                
-               newGameInfo.setFont(new Font("Helvetica", Font.PLAIN, 16));
+               newGameInfo.setFont(new Font("Helvetica", Font.PLAIN, 20));
                newGameInfo.setAlignmentX(JLabel.CENTER_ALIGNMENT);
                newGameInfo.setSize(500, 400);
                newGameInfo.setBorder(new EmptyBorder(20, 40, 20, 40));
@@ -247,11 +263,11 @@ public class WordLeeIntro extends JPanel{
 		});
                
                
-                JPanel lastButtons = new JPanel();
-		lastButtons.add(menuButton(startGame));
+                //JPanel lastButtons = new JPanel();
+		//lastButtons.add(menuButton(startGame));
             
        
-              card3.add(newGameInfo, BorderLayout.CENTER);
+              card3.add(newGameInfo, BorderLayout.NORTH);
               card3.add(Box.createVerticalStrut(30));
               card3.add(twoplay);
               card3.add(Box.createVerticalStrut(10));
@@ -259,16 +275,21 @@ public class WordLeeIntro extends JPanel{
               card3.add(Box.createVerticalStrut(10));
               card3.add(fourplay);
               card3.add(Box.createVerticalStrut(20));
-              card3.add(menuButton(playernumber), BorderLayout.SOUTH);
-              card3.add(Box.createVerticalStrut(80));
-              card3.add(menuButton(returnButton2), BorderLayout.SOUTH);
-              card3.add(lastButtons);
+              card3.add(menuButton(playernumber));
+              card3.add(Box.createVerticalStrut(30));
+              card3.add(menuButton(startGame));
+              card3.add(Box.createVerticalStrut(90));
+              card3.add(backButton(returnButton2), BorderLayout.SOUTH);
+
+              
 
 
               // Panel for the second board 15 x 15 board
               
                JPanel card4 = new JPanel();
                card4.setLayout(new BoxLayout(card4,BoxLayout.Y_AXIS));
+               card4.setBackground(new Color(90,53,148));               
+
 
                
                JLabel newGameInfo2 = new JLabel ("<html>Please enter player names for this round</html>");
@@ -276,7 +297,7 @@ public class WordLeeIntro extends JPanel{
                newGameInfo2.setFont(new Font("Helvetica", Font.PLAIN, 16));
                newGameInfo2.setAlignmentX(JLabel.CENTER_ALIGNMENT);
                newGameInfo2.setSize(400, 300);
-               newGameInfo2.setBorder(new EmptyBorder(10, 40, 10, 40));
+               newGameInfo2.setBorder(new EmptyBorder(20, 40, 20, 40));
                
                JRadioButton twoplay2 = new JRadioButton("Two - 2");
                twoplay2.setMnemonic(KeyEvent.VK_B);
@@ -381,10 +402,10 @@ public class WordLeeIntro extends JPanel{
              
             
                 
-              JPanel lastButtons2 = new JPanel();
-              lastButtons2.add(menuButton(startGame2));
+              //JPanel lastButtons2 = new JPanel();
+              //lastButtons2.add(menuButton(startGame2));
        
-              card4.add(newGameInfo2, BorderLayout.CENTER);
+              card4.add(newGameInfo2, BorderLayout.NORTH);
               card4.add(Box.createVerticalStrut(30));
               card4.add(twoplay2);
               card4.add(Box.createVerticalStrut(10));
@@ -392,12 +413,13 @@ public class WordLeeIntro extends JPanel{
               card4.add(Box.createVerticalStrut(10));
               card4.add(fourplay2);
               card4.add(Box.createVerticalStrut(20));
-              card4.add(menuButton(playernumber2), BorderLayout.SOUTH);
-              card4.add(Box.createVerticalStrut(80));
-              card4.add(menuButton(returnButton3), BorderLayout.SOUTH);
-              card4.add(lastButtons2);
-
-               
+              card4.add(menuButton(playernumber2));
+              card4.add(Box.createVerticalStrut(30));
+              card4.add(menuButton(startGame2));
+              card4.add(Box.createVerticalStrut(90));
+              card4.add(backButton(returnButton3), BorderLayout.SOUTH);
+              
+         
                // Adding the cards to the card layout/window
                 super.add(card1, "startCard");
                 super.add(card2, "gamerulescard");
@@ -406,12 +428,23 @@ public class WordLeeIntro extends JPanel{
     }
 
     private JButton menuButton(JButton jb) {
-                jb.setFont(new Font("Serif", Font.BOLD, 12));
+                jb.setFont(new Font("Serif", Font.BOLD, 20));
 		jb.setAlignmentX(JButton.CENTER_ALIGNMENT);
 		jb.setOpaque(true);
-		jb.setBackground(new Color(102,0,153));
-		jb.setBorder(BorderFactory.createCompoundBorder(new MatteBorder(1, 1, 1, 1, Color.RED), new EmptyBorder(10, 10, 10, 10)));
+		jb.setBackground(new Color(111,148,53));
+		jb.setBorder(BorderFactory.createCompoundBorder(new MatteBorder(1, 1, 1, 1, Color.RED), new EmptyBorder(20, 20, 20, 20)));
 		
 		return jb;    
+    }
+    
+    private JButton backButton(JButton bb) {
+                bb.setFont(new Font("Serif", Font.BOLD, 20));
+		bb.setAlignmentX(JButton.CENTER_ALIGNMENT);
+		bb.setOpaque(true);
+                bb.setSize(new Dimension(780,50));
+		bb.setBackground(new Color(111,148,53));
+		bb.setBorder(BorderFactory.createCompoundBorder(new MatteBorder(1, 1, 1, 1, Color.RED), new EmptyBorder(20, 364, 20, 364)));
+		
+		return bb;    
     }
 }

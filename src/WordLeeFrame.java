@@ -27,7 +27,7 @@ public class WordLeeFrame extends JFrame {
 		super.add(wordleeIntro);
 		super.revalidate();
 		super.repaint();
-		super.setSize(new Dimension(800, 450));
+		super.setSize(new Dimension(780,530));
 		super.setMinimumSize(super.getSize());
 		super.setResizable(false);
 		super.setVisible(true);
