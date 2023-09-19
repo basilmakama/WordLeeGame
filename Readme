@@ -1,0 +1,4 @@
+WordLee Game 
+Technologies: Java SE 6, Apache Lucene
+Build a word search game using the MVC architectural pattern
+Wrote Java code to manage the view and controller and used the Apache Lucene library for the text search.
